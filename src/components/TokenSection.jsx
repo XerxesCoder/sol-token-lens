@@ -10,9 +10,11 @@ import Image from "next/image";
 import RaydiumImage from '/public/assets/rd.png'
 import MeteoraImage from '/public/assets/mt.png'
 import PumpImage from '/public/assets/pump.png'
+import FluxImage from '/public/assets/flux.png'
 import { trucateAddress, formatNumber, scoreColor, overallColor, badgeColor, extractSolLP, pairName, getLockedPR } from "@/helpers/helpers";
 import { getNameByAddress } from "@/lib/accounts";
-export default function TokenSection({ tokenData }) {
+import { DexScreener } from "@/lib/utils";
+export default function TokenSection({ tokenData, tokenPrice }) {
 
 
     function getLockedLpValuePercentage(data) {
@@ -24,7 +26,7 @@ export default function TokenSection({ tokenData }) {
             quoteUSD,
             lpLockedUSD
         } = data;
-        const tokenPrice = (baseUSD + quoteUSD) / tokenSupply;
+        const tokenPrice = tokenPrice;
         const normalizedSupply = supply / Math.pow(10, decimals);
         const tokenMarketCap = normalizedSupply * tokenPrice;
         const lockedLpValuePct = (tokenMarketCap / (tokenMarketCap + lpLockedUSD)) * 100;
@@ -33,13 +35,27 @@ export default function TokenSection({ tokenData }) {
     }
 
 
-    const tokenPrice = tokenData?.markets ? tokenData?.markets[0]?.lp?.quoteMint == "So11111111111111111111111111111111111111112" ? tokenData?.markets[0]?.lp?.basePrice?.toFixed(11) : tokenData?.markets[0]?.lp?.quotePrice?.toFixed(11) : 0
     const tokenSupplyForMC = tokenData.token?.supply / 10 ** tokenData.token?.decimals;
     const calculateLockedLP = (lpLocked, lpTotalSupply) => {
         const lpLockedPct = (lpLocked / lpTotalSupply) * 100;
         return parseFloat(lpLockedPct.toFixed());
     }
     const lpLocked = tokenData?.markets ? calculateLockedLP(tokenData?.markets[0]?.lp?.lpLocked, tokenData?.markets[0]?.lp?.lpTotalSupply) : 0;
+
+
+    const getMarketImage = (marketName) => {
+        if (marketName.includes('raydium')) {
+            return RaydiumImage;
+        } else if (marketName.includes('meteora')) {
+            return MeteoraImage;
+        } else if (marketName.includes('pump')) {
+            return PumpImage;
+        } else if (marketName.includes('fluxbeam')) {
+            return FluxImage;
+        } else {
+            return null;
+        }
+    };
 
 
     if (tokenData.error) {
@@ -84,14 +100,25 @@ export default function TokenSection({ tokenData }) {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-xl sm:text-3xl font-bold">{tokenData.tokenMeta.name}</h1>
-                        <p className="text-foreground">{tokenData.tokenMeta.symbol}</p>
+                        <h1 className="text-xl sm:text-2xl font-bold">{tokenData.tokenMeta.name}{" "}<span className="text-foreground text-lg sm:text-xl">({tokenData.tokenMeta.symbol})</span></h1>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>Token Address:</span>
                             <a href={`https://solscan.io/account/${tokenData.mint}`} target="_blank" className="text-slate-800 font-bold underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-300">
                                 {trucateAddress(tokenData.mint)}
                             </a>
                         </div>
+                    </div>
+                    <div className="flex justify-center items-center gap-2">
+                        <a target="_blank" href={`https://dexscreener.com/solana/${tokenData.mint}`}>
+                            <Button size="sm">
+                                <DexScreener /> DexScreener
+                            </Button>
+                        </a>
+                        <a target="_blank" href={`https://raydium.io/swap/?inputMint=sol&outputMint=${tokenData.mint}`}>
+                            <Button size="sm">
+                                <Image src={RaydiumImage} alt="raydium" width={20} height={20} /> Swap
+                            </Button>
+                        </a>
                     </div>
                 </div>
 
@@ -113,6 +140,7 @@ export default function TokenSection({ tokenData }) {
                                 <h3 className="font-bold uppercase tracking-widest text-base sm:text-xl">
                                     {overallColor(tokenData.score).text}
                                 </h3>
+
                             </div>
                             <div className="space-y-4">
                                 {tokenData.risks.length > 0 && tokenData.risks.map((risk, index) => (
@@ -138,55 +166,57 @@ export default function TokenSection({ tokenData }) {
                                 </p>
                             </div>
                             <Separator className="mb-4" />
-                            <table className="w-full border-collapse text-sm sm:text-base">
-                                <thead>
-                                    <tr className="border-b border-gray-200 dark:border-gray-700 text-sm">
-                                        <th className="py-2 px-4 text-left font-medium">Market</th>
-                                        <th className="py-2 px-4 text-left font-medium">Address</th>
-                                        <th className="py-2 px-4 text-left font-medium">Pair</th>
-                                        <th className="py-2 px-4 text-left font-medium">LP Mint</th>
-                                        <th className="py-2 px-4 text-left font-medium">Liquidity</th>
-                                        <th className="py-2 px-4 text-left font-medium">LP Locked</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {tokenData?.markets?.length > 0 ? (
-                                        tokenData.markets.map((market, index) => (
-                                            <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-                                                <td className="p-2">
-                                                    <Image
-                                                        src={market.marketType.includes("meteora") ? MeteoraImage : market.marketType.includes("pump") ? PumpImage : RaydiumImage}
-                                                        alt={market.marketType}
-                                                        width={20}
-                                                        height={20}
-                                                        className="w-5 h-5"
-                                                    />
-
-                                                </td>
-                                                <td className="py-2 px-4">
-                                                    <a href={`https://solscan.io/account/${market.pubkey}`} target="_blank" className="text-xs underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-500">
-                                                        {trucateAddress(market.pubkey)}
-                                                    </a>
-                                                </td>
-                                                <td className="py-2 px-4 text-xs">{pairName(market, tokenData.tokenMeta.symbol)}</td>
-                                                <td className="py-2 px-4 text-xs">{market.mintLP == "11111111111111111111111111111111" ? "-" : (
-                                                    <a href={`https://solscan.io/account/${market.mintLP}`} target="_blank" className="text-xs underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-500">
-                                                        {trucateAddress(market.mintLP)}
-                                                    </a>
-                                                )}</td>
-                                                <td className="py-2 px-4">{extractSolLP(market)} <span className="text-[10px]">SOL</span></td>
-                                                <td className="py-2 px-4 text-xs">{calculateLockedLP(market.lp.lpLocked, market.lp.lpTotalSupply) || 0}%</td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="6" className="py-4 text-center text-gray-500">
-                                                No markets available
-                                            </td>
+                            <div className=" max-h-48 overflow-y-auto scrollbar-thin">
+                                <table className="w-full border-collapse text-sm sm:text-base">
+                                    <thead>
+                                        <tr className="border-b border-gray-200 dark:border-gray-700 text-sm">
+                                            <th className="p-2 text-left font-medium text-xs sm:text-sm">Market</th>
+                                            <th className="py-2 px-4 text-left font-medium text-xs sm:text-sm">Address</th>
+                                            <th className="py-2 px-4 text-left font-medium text-xs sm:text-sm">Pair</th>
+                                            <th className="py-2 px-4 text-left font-medium text-xs sm:text-sm">LP Mint</th>
+                                            <th className="py-2 px-4 text-left font-medium text-xs sm:text-sm">Liquidity</th>
+                                            <th className="py-2 px-4 text-left font-medium text-xs sm:text-sm">LP Locked</th>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {tokenData?.markets?.length > 0 ? (
+                                            tokenData.markets.map((market, index) => (
+                                                <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
+                                                    <td className="p-2">
+                                                        <Image
+                                                            src={getMarketImage(market.marketType)}
+                                                            alt={market.marketType}
+                                                            width={20}
+                                                            height={20}
+                                                            className="w-5 h-5"
+                                                        />
+
+                                                    </td>
+                                                    <td className="py-2 px-4">
+                                                        <a href={`https://solscan.io/account/${market.pubkey}`} target="_blank" className="text-xs underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-500">
+                                                            {trucateAddress(market.pubkey)}
+                                                        </a>
+                                                    </td>
+                                                    <td className="py-2 px-4 text-xs">{pairName(market, tokenData.tokenMeta.symbol)}</td>
+                                                    <td className="py-2 px-4 text-xs">{market.mintLP == "11111111111111111111111111111111" ? "-" : (
+                                                        <a href={`https://solscan.io/account/${market.mintLP}`} target="_blank" className="text-xs underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-500">
+                                                            {trucateAddress(market.mintLP)}
+                                                        </a>
+                                                    )}</td>
+                                                    <td className="py-2 px-4">{extractSolLP(market)} <span className="text-[10px]">SOL</span></td>
+                                                    <td className="py-2 px-4 text-xs">{calculateLockedLP(market.lp.lpLocked, market.lp.lpTotalSupply) || 0}%</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="6" className="py-4 text-center text-gray-500">
+                                                    No markets available
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </Card>
                     </div>
                     {/* Right Section */}
@@ -201,7 +231,7 @@ export default function TokenSection({ tokenData }) {
                                 <div>
                                     <h3 className="text-xs text-muted-foreground">Price</h3>
                                     <p className="text-xs sm:text-sm font-bold">
-                                        ${tokenPrice}
+                                        ${tokenPrice.toFixed(7)}
                                     </p>
                                 </div>
                                 <Separator />
@@ -215,7 +245,7 @@ export default function TokenSection({ tokenData }) {
                                 <div>
                                     <h3 className="text-xs text-muted-foreground">Market Cap</h3>
                                     <p className="text-xs sm:text-sm font-bold">
-                                        ${tokenData?.markets && Number(tokenPrice * tokenSupplyForMC).toLocaleString("en-US") || "N/A"}
+                                        ${Number(tokenPrice * tokenSupplyForMC).toLocaleString("en-US") || "N/A"}
                                     </p>
                                 </div>
                                 <Separator />
@@ -266,7 +296,7 @@ export default function TokenSection({ tokenData }) {
                                 <div>
                                     <h3 className="text-xs text-muted-foreground">LP Locked</h3>
                                     <p className="text-xs sm:text-sm font-bold">
-                                        {lpLocked} %
+                                        {lpLocked || "0"} %
                                     </p>
                                 </div>
 
@@ -288,7 +318,7 @@ export default function TokenSection({ tokenData }) {
                                             </a>
 
                                             <p className="text-sm font-bold">
-                                                ${details.usdcLocked || 0}
+                                                ${details.usdcLocked.toLocaleString("en-US") || 0}
                                             </p>
 
                                         </div>

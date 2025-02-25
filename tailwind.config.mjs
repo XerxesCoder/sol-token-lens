@@ -6,6 +6,12 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    'bg-orange-500',
+    'bg-green-500',
+    'bg-red-500',
+    'bg-blue-500',
+  ],
   theme: {
   	extend: {
   		colors: {
@@ -57,5 +63,5 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],
 };

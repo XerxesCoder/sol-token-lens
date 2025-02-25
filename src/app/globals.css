@@ -116,6 +116,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-gradient-to-b from-background to-secondary  text-foreground;
+    @apply bg-gradient-to-b from-background to-secondary  text-foreground scrollbar scrollbar-thin;
   }
 }
