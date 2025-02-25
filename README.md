@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Solana Token Lens
 
-## Getting Started
+Solana Token Lens is an open-source tool that allows users to retrieve information about Solana tokens by entering a token address. It uses the [RugCheck](https://rugcheck.xyz) public API  to fetch and display token details.
 
-First, run the development server:
+## Demo
+live demo: [Solana Token Lens](https://sol-token-lens.vercel.app/)
 
-```bash
+## Features
+- Fetches real-time token information using the RugCheck API
+- Built with **Next.js** for a seamless user experience
+- Styled with **Tailwind CSS**
+- Uses **ShadCN** for UI components
+- Includes **Lucide React** icons for a modern look
+- Open-source: Easily fork and run locally
+
+## Installation
+
+### Prerequisites
+- **Node.js** (Latest LTS recommended)
+- **npm** or **yarn**
+
+### Clone the Repository
+```sh
+git clone https://github.com/XerxesCoder/sol-token-lens.git
+cd sol-token-lens
+```
+
+### Install Dependencies
+```sh
+npm install --force
+# or
+yarn install
+```
+
+### Run Locally
+```sh
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Then, open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Usage
+1. Enter a **Solana token address** in the input field.
+2. Click the search button.
+3. View token details retrieved from RugCheck.
 
-## Learn More
+## Contributing
+This project is open-source, and contributions are welcome! Feel free to fork the repository and submit pull requests.
 
-To learn more about Next.js, take a look at the following resources:
+## License
+MIT License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contact
+For any inquiries:
+- **Telegram:** [@xerxescoder](https://t.me/xerxescoder)
+- **Telegram Channel:** [@xerxescodes](https://t.me/xerxescodes)
+- **Email:** [xerxescode@gmail.com](mailto:xerxescode@gmail.com)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
