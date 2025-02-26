@@ -11,6 +11,7 @@ import RaydiumImage from '/public/assets/rd.png'
 import MeteoraImage from '/public/assets/mt.png'
 import PumpImage from '/public/assets/pump.png'
 import FluxImage from '/public/assets/flux.png'
+import JupiterImage from '/public/assets/jup.png'
 import { trucateAddress, formatNumber, scoreColor, overallColor, badgeColor, extractSolLP, pairName, getLockedPR } from "@/helpers/helpers";
 import { getNameByAddress } from "@/lib/accounts";
 import { DexScreener } from "@/lib/utils";
@@ -52,6 +53,8 @@ export default function TokenSection({ tokenData, tokenPrice }) {
             return PumpImage;
         } else if (marketName.includes('fluxbeam')) {
             return FluxImage;
+        } else if (marketName.includes('jupiter')) {
+            return JupiterImage;
         } else {
             return null;
         }
@@ -91,24 +94,27 @@ export default function TokenSection({ tokenData, tokenPrice }) {
             <div className="space-y-6 w-full">
                 <Link
                     href={'/'}
-                    className="w-fit flex justify-center  font-bold items-center hover:border-gray-950 text-black border-slate-800 border text-xs hover:bg-gray-200 p-2 transition-all ease-in-out rounded-xl"
+                    className="w-fit flex justify-center  font-bold items-center border border-slate-300  hover:border-gray-500 text-black  text-xs hover:bg-gray-200 p-2 transition-all ease-in-out rounded-xl"
 
                 >
                     <Home className="w-4 h-4 mr-2 text-black" />
                     Back to Home
                 </Link>
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-xl sm:text-2xl font-bold">{tokenData.tokenMeta.name}{" "}<span className="text-foreground text-lg sm:text-xl">({tokenData.tokenMeta.symbol})</span></h1>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>Token Address:</span>
-                            <a href={`https://solscan.io/account/${tokenData.mint}`} target="_blank" className="text-slate-800 font-bold underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-300">
-                                {trucateAddress(tokenData.mint)}
-                            </a>
+                <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <div className="flex justify-start items-center gap-3">
+                        <Image src={`https://api.degencdn.com/v1/nfts/${tokenData.mint}/image.png`} width={65} height={65} className="rounded-xl" alt={tokenData.tokenMeta.name} />
+                        <div>
+                            <h1 className="text-xl sm:text-2xl font-bold">{tokenData.tokenMeta.name}{" "}<span className="text-foreground text-lg sm:text-xl">({tokenData.tokenMeta.symbol})</span></h1>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span>Token Address:</span>
+                                <a href={`https://solscan.io/account/${tokenData.mint}`} target="_blank" className="text-slate-800 font-bold underline underline-offset-4 hover:opacity-50 transition-opacity ease-in-out duration-300">
+                                    {trucateAddress(tokenData.mint)}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex justify-center items-center gap-2">
+                    <div className="flex flex-wrap justify-center items-center gap-2">
                         <a target="_blank" href={`https://dexscreener.com/solana/${tokenData.mint}`}>
                             <Button size="sm">
                                 <DexScreener /> DexScreener
@@ -116,7 +122,17 @@ export default function TokenSection({ tokenData, tokenPrice }) {
                         </a>
                         <a target="_blank" href={`https://raydium.io/swap/?inputMint=sol&outputMint=${tokenData.mint}`}>
                             <Button size="sm">
-                                <Image src={RaydiumImage} alt="raydium" width={20} height={20} /> Swap
+                                <Image src={RaydiumImage} alt="raydium" width={20} height={20} /> Raydium
+                            </Button>
+                        </a>
+                        <a target="_blank" href={`https://jup.ag/swap/SOL${tokenData.mint}`}>
+                            <Button size="sm">
+                                <Image src={JupiterImage} alt="jupiter" width={20} height={20} /> Jupiter
+                            </Button>
+                        </a>
+                        <a target="_blank" href={`https://fluxbeam.xyz/app/swap?inMint=So11111111111111111111111111111111111111112&outMint=${tokenData.mint}`}>
+                            <Button size="sm">
+                                <Image src={FluxImage} alt="fluxbeam" width={20} height={20} /> Fluxbeam
                             </Button>
                         </a>
                     </div>
@@ -146,10 +162,10 @@ export default function TokenSection({ tokenData, tokenPrice }) {
                                 {tokenData.risks.length > 0 && tokenData.risks.map((risk, index) => (
                                     <div key={index} className="space-y-2">
                                         <div className="flex justify-between">
-                                            <span className="font-medium">{risk.name} {risk.value}</span>
+                                            <h3 className="text-sm sm:text-lg font-medium ">{risk.name} {risk.value}</h3>
                                             <Badge variant="outline" className={`${badgeColor(risk.level)} w-16 flex justify-center items-center text-white`}>{risk.level == 'danger' ? "Danger" : "Warning"}</Badge>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">{risk.description}</p>
+                                        <p className="text-xs sm:text-sm text-muted-foreground">{risk.description}</p>
 
                                     </div>
                                 ))}
