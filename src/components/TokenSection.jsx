@@ -125,7 +125,7 @@ export default function TokenSection({ tokenData, tokenPrice }) {
                                 <Image src={RaydiumImage} alt="raydium" width={20} height={20} /> Raydium
                             </Button>
                         </a>
-                        <a target="_blank" href={`https://jup.ag/swap/SOL${tokenData.mint}`}>
+                        <a target="_blank" href={`https://jup.ag/swap/SOL-${tokenData.mint}`}>
                             <Button size="sm">
                                 <Image src={JupiterImage} alt="jupiter" width={20} height={20} /> Jupiter
                             </Button>
